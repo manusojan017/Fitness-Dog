@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FITNESS 07 • Cutting & Nutrition Dashboard</title>
+
+<style>
+:root{
+  --red:#ff1e2d;
+  --red2:#b90018;
+  --black:#070707;
+  --panel:#111214;
+  --panel2:#18191c;
+  --line:#2a2c31;
+  --text:#f5f5f5;
+  --muted:#92959d;
+  --green:#37d98b;
+  --yellow:#ffd83d;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 85% 5%,rgba(255,30,45,.13),transparent 28%),
+    radial-gradient(circle at 10% 35%,rgba(255,30,45,.07),transparent 24%),
+    var(--black);
+  color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+
+button,input,select{font:inherit}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.app{
+  display:grid;
+  grid-template-columns:250px 1fr;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:sticky;
+  top:0;
+  height:100vh;
+  padding:22px 16px;
+  border-right:1px solid var(--line);
+  background:linear-gradient(180deg,#0b0b0c,#080808);
+}
+
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:8px 8px 24px;
+  border-bottom:1px solid var(--line);
+}
+
+.logo{
+  width:48px;height:48px;
+  border:2px solid var(--red);
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  color:var(--red);
+  font-size:25px;
+  box-shadow:0 0 22px rgba(255,30,45,.18);
+}
+
+.brand strong{display:block;font-size:17px}
+.brand small{color:var(--muted)}
+
+.nav{margin-top:20px;display:grid;gap:7px}
+
+.nav button{
+  background:transparent;
+  color:#bfc1c7;
+  text-align:left;
+  padding:12px 13px;
+  border-radius:12px;
+  transition:.2s;
+}
+
+.nav button:hover,.nav button.active{
+  color:white;
+  background:linear-gradient(90deg,rgba(255,30,45,.2),rgba(255,30,45,.04));
+  border:1px solid rgba(255,30,45,.35);
+}
+
+.side-goal{
+  margin-top:28px;
+  padding:15px;
+  border:1px solid rgba(255,30,45,.45);
+  border-radius:16px;
+  background:#0e0e10;
+}
+
+.side-goal .big{font-size:25px;font-weight:900}
+.red{color:var(--red)}
+.muted{color:var(--muted)}
+
+.main{
+  width:100%;
+  max-width:1500px;
+  margin:auto;
+  padding:25px;
+}
+
+/* TOP */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.title h1{
+  margin:0;
+  font-size:clamp(28px,4vw,46px);
+  letter-spacing:-1.5px;
+}
+
+.title h1 span{color:var(--red)}
+.title p{margin:7px 0 0;color:var(--muted)}
+
+.date-box{
+  border:1px solid var(--line);
+  background:var(--panel);
+  padding:10px 13px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.date-box input{
+  color:white;
+  background:transparent;
+  border:0;
+  outline:0;
+}
+
+/* HERO */
+.hero{
+  display:grid;
+  grid-template-columns:1.4fr .8fr .8fr;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.card{
+  background:linear-gradient(145deg,#151619,#0f1012);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 12px 40px rgba(0,0,0,.25);
+}
+
+.card.red-border{
+  border-color:rgba(255,30,45,.55);
+  box-shadow:0 0 30px rgba(255,30,45,.08);
+}
+
+.goal-card{
+  min-height:145px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.goal-label{
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:11px;
+}
+
+.goal-weight{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin:7px 0;
+}
+
+.goal-weight strong{
+  font-size:42px;
+  line-height:1;
+}
+
+.arrow{color:var(--red);font-size:30px}
+
+.goal-card p{margin:0;color:#c7c9ce}
+
+.stat-card h3{
+  margin:0 0 9px;
+  color:var(--red);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.stat-number{
+  font-size:30px;
+  font-weight:900;
+}
+
+.progress{
+  height:8px;
+  border-radius:99px;
+  background:#292b30;
+  overflow:hidden;
+  margin-top:11px;
+}
+
+.progress > div{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--red2),var(--red));
+  border-radius:inherit;
+  transition:.3s;
+}
+
+/* SECTION */
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin:26px 0 12px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:20px;
+}
+
+.section-title p{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* MACRO CARDS */
+.macro-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+}
+
+.macro{
+  padding:16px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  position:relative;
+  overflow:hidden;
+}
+
+.macro:after{
+  content:"";
+  position:absolute;
+  inset:auto -30px -50px auto;
+  width:100px;height:100px;
+  background:rgba(255,30,45,.08);
+  border-radius:50%;
+}
+
+.macro .icon{font-size:21px}
+.macro .label{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:8px;
+}
+.macro .value{
+  font-size:27px;
+  font-weight:900;
+  margin-top:4px;
+}
+.macro .target{color:#777b84;font-size:11px;margin-top:4px}
+
+/* MAIN GRID */
+.two-col{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:16px;
+}
+
+.three-col{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+/* FOOD */
+.food-list{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+
+.food-row{
+  display:grid;
+  grid-template-columns:1fr 90px;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  background:#0d0e10;
+  border:1px solid #24262b;
+  border-radius:12px;
+}
+
+.food-row label{
+  font-size:13px;
+  color:#dddfe4;
+}
+
+.food-row small{
+  display:block;
+  color:#777b84;
+  margin-top:2px;
+}
+
+.input{
+  width:100%;
+  padding:9px 10px;
+  border-radius:9px;
+  border:1px solid #303238;
+  background:#191a1e;
+  color:white;
+  outline:none;
+}
+
+.input:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(255,30,45,.08);
+}
+
+.action{
+  margin-top:12px;
+  display:flex;
+  gap:9px;
+}
+
+.btn{
+  background:var(--red);
+  color:white;
+  padding:11px 15px;
+  border-radius:10px;
+  font-weight:800;
+}
+
+.btn.secondary{
+  background:#24252a;
+  border:1px solid #383a40;
+}
+
+.btn:hover{filter:brightness(1.08)}
+
+/* VITAMINS */
+.vitamin-list{display:grid;gap:10px}
+
+.vit-row{
+  display:grid;
+  grid-template-columns:65px 1fr 95px;
+  gap:9px;
+  align-items:center;
+}
+
+.vit-name{font-weight:800;color:var(--red)}
+.vit-bar{
+  height:9px;
+  background:#292b30;
+  border-radius:99px;
+  overflow:hidden;
+}
+.vit-bar div{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#8e0014,var(--red));
+}
+.vit-value{text-align:right;font-size:12px;color:#ddd}
+
+/* DONUT */
+.chart-wrap{
+  display:grid;
+  grid-template-columns:190px 1fr;
+  gap:20px;
+  align-items:center;
+}
+
+.donut{
+  width:180px;height:180px;
+  border-radius:50%;
+  background:conic-gradient(var(--red) 0 45%,#333 45% 70%,#8e0014 70% 90%,#555 90% 100%);
+  position:relative;
+  display:grid;
+  place-items:center;
+}
+.donut:after{
+  content:"";
+  position:absolute;
+  width:105px;height:105px;
+  background:#121316;
+  border-radius:50%;
+}
+.donut span{
+  position:relative;
+  z-index:2;
+  font-size:21px;
+  font-weight:900;
+}
+
+.legend{display:grid;gap:12px}
+.legend div{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px}
+
+/* HABITS */
+.habit-list{display:grid;gap:10px}
+.habit{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#0d0e10;
+}
+.habit input{
+  width:19px;height:19px;
+  accent-color:var(--red);
+}
+
+/* WEIGHT */
+.weight-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.weight-box{
+  background:#0d0e10;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:13px;
+}
+.weight-box span{display:block;color:var(--muted);font-size:11px}
+.weight-box strong{display:block;font-size:22px;margin-top:4px}
+
+/* REMINDER */
+.reminder{
+  border:1px solid rgba(255,30,45,.45);
+  background:linear-gradient(120deg,rgba(255,30,45,.12),rgba(255,30,45,.02));
+}
+.reminder h3{margin:0;color:var(--red)}
+.reminder p{color:#c6c8cd;line-height:1.6}
+
+/* FOOTER */
+footer{
+  text-align:center;
+  color:#666;
+  padding:28px 0 10px;
+  font-size:12px;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  background:#17181b;
+  border:1px solid var(--red);
+  padding:12px 16px;
+  border-radius:12px;
+  transform:translateY(100px);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* MOBILE */
+@media(max-width:1050px){
+  .app{grid-template-columns:1fr}
+  .sidebar{
+    position:relative;
+    height:auto;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+  }
+  .nav{grid-template-columns:repeat(3,1fr)}
+  .side-goal{display:none}
+  .hero{grid-template-columns:1fr 1fr}
+  .goal-card{grid-column:1/-1}
+  .macro-grid{grid-template-columns:repeat(3,1fr)}
+  .two-col{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){
+  .main{padding:15px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .nav{grid-template-columns:repeat(2,1fr)}
+  .hero,.macro-grid,.three-col{grid-template-columns:1fr 1fr}
+  .goal-card{grid-column:1/-1}
+  .food-list{grid-template-columns:1fr}
+  .chart-wrap{grid-template-columns:1fr}
+  .donut{margin:auto}
+}
+
+@media(max-width:470px){
+  .hero,.macro-grid,.three-col,.weight-grid{grid-template-columns:1fr}
+  .goal-card{grid-column:auto}
+  .nav{grid-template-columns:1fr}
+  .goal-weight strong{font-size:34px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+  <div class="brand">
+    <div class="logo">💪</div>
+    <div>
+      <strong>FITNESS 07</strong>
+      <small>Cut • Build • Transform</small>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="active" onclick="scrollToId('dashboard')">▦ Dashboard</button>
+    <button onclick="scrollToId('food')">＋ Food Tracker</button>
+    <button onclick="scrollToId('nutrition')">◈ Nutrition</button>
+    <button onclick="scrollToId('vitamins')">✦ Vitamins</button>
+    <button onclick="scrollToId('habits')">✓ Daily Habits</button>
+    <button onclick="scrollToId('progress')">↗ Progress</button>
+  </nav>
+
+  <div class="side-goal">
+    <div class="muted">90-DAY TARGET</div>
+    <div class="big"><span class="red">80</span> → <span class="red">70 KG</span></div>
+    <p class="muted">Focus • Discipline • Consistency</p>
+  </div>
+
+</aside>
+
+
+<main class="main" id="dashboard">
+
+  <header class="topbar">
+    <div class="title">
+      <h1>NUTRITION <span>DASHBOARD</span></h1>
+      <p>Daily cutting • muscle retention • better habits</p>
+    </div>
+
+    <div class="date-box">
+      📅
+      <input type="date" id="datePicker">
+    </div>
+  </header>
+
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="card red-border goal-card">
+      <div class="goal-label">90 Day Transformation</div>
+      <div class="goal-weight">
+        <strong>80 KG</strong>
+        <span class="arrow">→</span>
+        <strong class="red">70 KG</strong>
+      </div>
+      <p>Build strength • preserve muscle • reduce body fat</p>
+    </div>
+
+    <div class="card stat-card">
+      <h3>Today's Calories</h3>
+      <div class="stat-number"><span id="heroCalories">0</span> <small class="muted">/ 1900</small></div>
+      <div class="progress"><div id="calorieBar"></div></div>
+    </div>
+
+    <div class="card stat-card">
+      <h3>Today's Protein</h3>
+      <div class="stat-number"><span id="heroProtein">0</span> <small class="muted">/ 145g</small></div>
+      <div class="progress"><div id="proteinBar"></div></div>
+    </div>
+
+  </section>
+
+
+  <!-- MACROS -->
+  <div class="section-title" id="nutrition">
+    <div>
+      <h2>🔥 Daily Nutrition Targets</h2>
+      <p>Your tracking dashboard</p>
+    </div>
+  </div>
+
+  <section class="macro-grid">
+
+    <div class="macro">
+      <div class="icon">🔥</div>
+      <div class="label">CALORIES</div>
+      <div class="value"><span id="calories">0</span></div>
+      <div class="target">Target: 1,900–2,100 kcal</div>
+    </div>
+
+    <div class="macro">
+      <div class="icon">💪</div>
+      <div class="label">PROTEIN</div>
+      <div class="value"><span id="protein">0</span>g</div>
+      <div class="target">Target: 120–150g</div>
+    </div>
+
+    <div class="macro">
+      <div class="icon">⚡</div>
+      <div class="label">CARBOHYDRATES</div>
+      <div class="value"><span id="carbs">0</span>g</div>
+      <div class="target">Target: ~200–250g</div>
+    </div>
+
+    <div class="macro">
+      <div class="icon">🫗</div>
+      <div class="label">FAT</div>
+      <div class="value"><span id="fat">0</span>g</div>
+      <div class="target">Target: ~50–65g</div>
+    </div>
+
+    <div class="macro">
+      <div class="icon">🌾</div>
+      <div class="label">FIBER</div>
+      <div class="value"><span id="fiber">0</span>g</div>
+      <div class="target">Target: 30–38g</div>
+    </div>
+
+  </section>
+
+
+  <!-- FOOD -->
+  <div class="section-title" id="food">
+    <div>
+      <h2>🍽 Food Calculator</h2>
+      <p>Enter what you actually ate today</p>
+    </div>
+  </div>
+
+  <section class="card">
+
+    <div class="food-list" id="foodList"></div>
+
+    <div class="action">
+      <button class="btn" onclick="calculate()">CALCULATE & SAVE</button>
+      <button class="btn secondary" onclick="resetFoods()">RESET FOOD</button>
+    </div>
+
+    <p class="section-note">
+      Values are approximate. Rice/chicken/fish are treated as cooked weight; soya is dry weight.
+      For packaged products, replace the database values with the nutrition label of your exact product.
+    </p>
+
+  </section>
+
+
+  <!-- RESULTS + VITAMINS -->
+  <div class="two-col">
+
+    <section class="card" id="vitamins">
+      <div class="section-title" style="margin-top:0">
+        <div>
+          <h2>🥬 Vitamins & Micronutrients</h2>
+          <p>Daily intake from your logged foods</p>
+        </div>
+      </div>
+
+      <div class="vitamin-list">
+
+        <div class="vit-row">
+          <div class="vit-name">Vit A</div>
+          <div class="vit-bar"><div id="barA"></div></div>
+          <div class="vit-value"><span id="vitA">0</span> / 900 µg</div>
+        </div>
+
+        <div class="vit-row">
+          <div class="vit-name">Vit C</div>
+          <div class="vit-bar"><div id="barC"></div></div>
+          <div class="vit-value"><span id="vitC">0</span> / 90 mg</div>
+        </div>
+
+        <div class="vit-row">
+          <div class="vit-name">Vit K</div>
+          <div class="vit-bar"><div id="barK"></div></div>
+          <div class="vit-value"><span id="vitK">0</span> / 120 µg</div>
+        </div>
+
+        <div class="vit-row">
+          <div class="vit-name">Folate</div>
+          <div class="vit-bar"><div id="barFolate"></div></div>
+          <div class="vit-value"><span id="vitFolate">0</span> / 400 µg</div>
+        </div>
+
+        <div class="vit-row">
+          <div class="vit-name">Vit E</div>
+          <div class="vit-bar"><div id="barE"></div></div>
+          <div class="vit-value"><span id="vitE">0</span> / 15 mg</div>
+        </div>
+
+        <div class="vit-row">
+          <div class="vit-name">Vit B6</div>
+          <div class="vit-bar"><div id="barB6"></div></div>
+          <div class="vit-value"><span id="vitB6">0</span> / 1.3 mg</div>
+        </div>
+
+      </div>
+
+      <div class="reminder card" style="margin-top:15px;padding:13px">
+        <h3>🥦 Vegetable Reminder</h3>
+        <p style="margin-bottom:0">
+          Rotate colorful vegetables such as spinach, carrot, broccoli, capsicum,
+          beans and tomato to improve micronutrient variety and fiber intake.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section class="card">
+      <div class="section-title" style="margin-top:0">
+        <div>
+          <h2>📊 Macro Balance</h2>
+          <p>Based on today's intake</p>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="donut" id="donut"><span id="donutCalories">0 kcal</span></div>
+
+        <div class="legend">
+          <div><span><i class="dot" style="background:#ff1e2d"></i>Protein</span><b id="legendProtein">0g</b></div>
+          <div><span><i class="dot" style="background:#555"></i>Carbs</span><b id="legendCarbs">0g</b></div>
+          <div><span><i class="dot" style="background:#8e0014"></i>Fat</span><b id="legendFat">0g</b></div>
+          <div><span><i class="dot" style="background:#999"></i>Fiber</span><b id="legendFiber">0g</b></div>
+        </div>
+      </div>
+
+      <div class="status-box" style="margin-top:18px">
+        <div>Protein remaining: <strong class="red" id="proteinRemaining">145g</strong></div>
+        <div style="margin-top:8px">Calories remaining to 1,900: <strong class="red" id="calorieRemaining">1900 kcal</strong></div>
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- WATER / HABITS / PROGRESS -->
+  <div class="section-title" id="habits">
+    <div>
+      <h2>💧 Recovery & Daily Habits</h2>
+      <p>Nutrition is only one part of the transformation</p>
+    </div>
+  </div>
+
+  <div class="three-col">
+
+    <section class="card">
+      <h2 style="margin-top:0">💧 Water</h2>
+      <div style="font-size:30px;font-weight:900">
+        <span id="waterAmount">0</span>
+        <span class="muted" style="font-size:14px">/ 3000 ml</span>
+      </div>
+      <div class="progress"><div id="waterBar"></div></div>
+
+      <div class="action">
+        <button class="btn" onclick="addWater(250)">+250</button>
+        <button class="btn secondary" onclick="addWater(500)">+500</button>
+        <button class="btn secondary" onclick="addWater(1000)">+1L</button>
+      </div>
+      <button class="btn secondary" style="width:100%;margin-top:8px" onclick="setWater(0)">RESET</button>
+    </section>
+
+
+    <section class="card">
+      <h2 style="margin-top:0">😴 Sleep</h2>
+      <input class="input" id="sleep" type="number" min="0" max="24" step=".1" placeholder="Hours slept">
+      <p class="muted">Aim for roughly 7–9 hours for recovery and performance.</p>
+    </section>
+
+
+    <section class="card">
+      <h2 style="margin-top:0">🏋️ Training</h2>
+      <div class="habit-list">
+        <label class="habit"><span>Workout completed</span><input type="checkbox" id="workout"></label>
+        <label class="habit"><span>Creatine taken</span><input type="checkbox" id="creatine"></label>
+        <label class="habit"><span>Vegetables + fruit</span><input type="checkbox" id="plants"></label>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- CHECKLIST -->
+  <div class="section-title">
+    <div>
+      <h2>☑ Daily Checklist</h2>
+      <p>Small actions → big results</p>
+    </div>
+  </div>
+
+  <section class="card">
+
+    <div class="habit-list">
+
+      <label class="habit">
+        <span>🔥 Stay within planned calories</span>
+        <input type="checkbox" id="checkCalories">
+      </label>
+
+      <label class="habit">
+        <span>💪 Hit protein target</span>
+        <input type="checkbox" id="checkProtein">
+      </label>
+
+      <label class="habit">
+        <span>🌾 Reach fiber target</span>
+        <input type="checkbox" id="checkFiber">
+      </label>
+
+      <label class="habit">
+        <span>🥬 Eat vegetables / fruit</span>
+        <input type="checkbox" id="checkVeg">
+      </label>
+
+      <label class="habit">
+        <span>💧 Complete water goal</span>
+        <input type="checkbox" id="checkWater">
+      </label>
+
+      <label class="habit">
+        <span>😴 Get 7+ hours sleep</span>
+        <input type="checkbox" id="checkSleep">
+      </label>
+
+    </div>
+
+    <button class="btn" style="width:100%;margin-top:13px" onclick="completeDay()">
+      🏆 COMPLETE TODAY'S GOALS
+    </button>
+
+    <div id="dayMessage" class="status-box" style="margin-top:12px;text-align:center"></div>
+
+  </section>
+
+
+  <!-- PROGRESS -->
+  <div class="section-title" id="progress">
+    <div>
+      <h2>⚖️ Weight & Goal Progress</h2>
+      <p>Track the journey from 80 kg toward 70 kg</p>
+    </div>
+  </div>
+
+  <section class="card">
+
+    <div class="weight-grid">
+
+      <div class="weight-box">
+        <span>START</span>
+        <strong>80.0 kg</strong>
+      </div>
+
+      <div class="weight-box">
+        <span>TODAY'S WEIGHT</span>
+        <input class="input" id="weight" type="number" step=".1" placeholder="kg">
+      </div>
+
+      <div class="weight-box">
+        <span>TARGET</span>
+        <strong class="red">70.0 kg</strong>
+      </div>
+
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;font-size:12px">
+        <span>80 kg</span>
+        <span id="weightProgressText">0% toward target</span>
+        <span>70 kg</span>
+      </div>
+      <div class="progress"><div id="weightBar"></div></div>
+    </div>
+
+  </section>
+
+
+  <!-- FOOD GUIDE -->
+  <div class="section-title">
+    <div>
+      <h2>🥗 Smart Food Guide</h2>
+      <p>Build your meals around these categories</p>
+    </div>
+  </div>
+
+  <section class="three-col">
+
+    <div class="card">
+      <h3 class="red">💪 Protein</h3>
+      <p class="muted">Chicken • eggs • fish • whey • soya • curd/Greek yogurt</p>
+    </div>
+
+    <div class="card">
+      <h3 class="red">⚡ Complex Carbs</h3>
+      <p class="muted">Oats • rice • wheat/roti • fruits • vegetables • legumes</p>
+    </div>
+
+    <div class="card">
+      <h3 class="red">🥜 Healthy Fats</h3>
+      <p class="muted">Almonds • sunflower seeds • peanuts • other whole-food sources</p>
+    </div>
+
+  </section>
+
+
+  <section class="card reminder" style="margin-top:16px">
+    <h3>DISCIPLINE TODAY. RESULTS TOMORROW.</h3>
+    <p>
+      You do not need a perfect day. You need consistent days.
+      Eat enough protein, control calories, train hard, recover properly,
+      and keep going.
+    </p>
+  </section>
+
+
+  <footer>
+    FITNESS 07 • CUTTING & NUTRITION TRACKER<br>
+    Your data stays in this browser using localStorage.
+  </footer>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* =========================================================
+   FITNESS 07 — COMPLETE DAILY TRACKER
+   All data is stored locally in the browser.
+   ========================================================= */
+
+const TARGET = {
+  calories: 1900,
+  caloriesUpper: 2100,
+  protein: 145,
+  proteinMinimum: 120,
+  carbs: 225,
+  fat: 55,
+  fiber: 34,
+  water: 3000,
+
+  vitamins: {
+    A: 900,       // µg RAE
+    C: 90,        // mg
+    K: 120,       // µg
+    Folate: 400,  // µg DFE
+    E: 15,        // mg
+    B6: 1.3       // mg
+  }
+};
+
+
+/*
+Approximate nutrition values per 100 g/ml.
+Vitamin values are approximate and intended for tracking,
+not medical diagnosis.
+*/
+
+const FOODS = {
+
+  eggs:{
+    name:"🥚 Eggs",
+    unit:"pieces",
+    step:1,
+    base:1,
+    calories:72,
+    protein:6.3,
+    carbs:.4,
+    fat:4.8,
+    fiber:0,
+    A:75,C:0,K:.3,Folate:24,E:.5,B6:.1
+  },
+
+  milk:{
+    name:"🥛 Milk",
+    unit:"ml",
+    step:10,
+    base:100,
+    calories:61,
+    protein:3.4,
+    carbs:4.8,
+    fat:3.3,
+    fiber:0,
+    A:46,C:0,K:0.2,Folate:5,E:.1,B6:.04
+  },
+
+  oats:{
+    name:"🥣 Oats",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:380,
+    protein:17,
+    carbs:64,
+    fat:7,
+    fiber:10,
+    A:0,C:0,K:0,Folate:56,E:.4,B6:.12
+  },
+
+  chicken:{
+    name:"🍗 Chicken • cooked",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:165,
+    protein:31,
+    carbs:0,
+    fat:3.6,
+    fiber:0,
+    A:13,C:0,K:2,Folate:4,E:.3,B6:.6
+  },
+
+  rice:{
+    name:"🍚 Rice • cooked",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:130,
+    protein:2.7,
+    carbs:28,
+    fat:.3,
+    fiber:.4,
+    A:0,C:0,K:.1,Folate:58,E:.1,B6:.1
+  },
+
+  fish:{
+    name:"🐟 Fish • cooked",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:170,
+    protein:25,
+    carbs:0,
+    fat:7,
+    fiber:0,
+    A:20,C:0,K:.2,Folate:10,E:1,B6:.3
+  },
+
+  soya:{
+    name:"🌱 Soya chunks • dry",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:345,
+    protein:52,
+    carbs:33,
+    fat:1,
+    fiber:13,
+    A:0,C:6,K:0,Folate:375,E:.1,B6:.4
+  },
+
+  peanuts:{
+    name:"🥜 Peanuts",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:567,
+    protein:26,
+    carbs:16,
+    fat:49,
+    fiber:8.5,
+    A:0,C:0,K:0,Folate:240,E:8.3,B6:.35
+  },
+
+  whey:{
+    name:"🥤 MuscleBlaze Whey",
+    unit:"scoops",
+    step:.25,
+    base:1,
+    calories:120,
+    protein:24,
+    carbs:3,
+    fat:2,
+    fiber:0,
+    A:0,C:0,K:0,Folate:0,E:0,B6:0
+  },
+
+  banana:{
+    name:"🍌 Banana • medium",
+    unit:"pieces",
+    step:1,
+    base:1,
+    calories:105,
+    protein:1.3,
+    carbs:27,
+    fat:.4,
+    fiber:3.1,
+    A:5,C:10.3,K:.6,Folate:24,E:.1,B6:.43
+  },
+
+  papaya:{
+    name:"🧡 Papaya",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:43,
+    protein:.5,
+    carbs:11,
+    fat:.3,
+    fiber:1.7,
+    A:47,C:61,K:2.6,Folate:38,E:.3,B6:.08
+  },
+
+  carrot:{
+    name:"🥕 Carrot",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:41,
+    protein:.9,
+    carbs:9.6,
+    fat:.2,
+    fiber:2.8,
+    A:835,C:5.9,K:13.2,Folate:19,E:.7,B6:.14
+  },
+
+  beans:{
+    name:"🫘 Green beans",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:31,
+    protein:1.8,
+    carbs:7,
+    fat:.2,
+    fiber:2.7,
+    A:35,C:12.2,K:43,Folate:33,E:.4,B6:.14
+  },
+
+  curd:{
+    name:"🥛 Curd",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:61,
+    protein:3.5,
+    carbs:4.7,
+    fat:3.3,
+    fiber:0,
+    A:27,C:0,K:.2,Folate:7,E:.1,B6:.06
+  },
+
+  almonds:{
+    name:"🌰 Almonds",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:579,
+    protein:21.2,
+    carbs:21.6,
+    fat:49.9,
+    fiber:12.5,
+    A:0,C:0,K:0,Folate:44,E:25.6,B6:.14
+  },
+
+  sunflower:{
+    name:"🌻 Sunflower seeds",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:584,
+    protein:20.8,
+    carbs:20,
+    fat:51.5,
+    fiber:8.6,
+    A:3,C:1.4,K:0,Folate:227,E:35.2,B6:1.35
+  },
+
+  spinach:{
+    name:"🥬 Spinach",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:23,
+    protein:2.9,
+    carbs:3.6,
+    fat:.4,
+    fiber:2.2,
+    A:469,C:28.1,K:483,Folate:194,E:2.0,B6:.2
+  },
+
+  broccoli:{
+    name:"🥦 Broccoli",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:34,
+    protein:2.8,
+    carbs:7,
+    fat:.4,
+    fiber:2.6,
+    A:31,C:89.2,K:101.6,Folate:63,E:.8,B6:.17
+  },
+
+  capsicum:{
+    name:"🫑 Capsicum",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:31,
+    protein:1,
+    carbs:6,
+    fat:.3,
+    fiber:2.1,
+    A:157,C:80,K:7.4,Folate:46,E:1.6,B6:.29
+  },
+
+  tomato:{
+    name:"🍅 Tomato",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:18,
+    protein:.9,
+    carbs:3.9,
+    fat:.2,
+    fiber:1.2,
+    A:42,C:13.7,K:7.9,Folate:15,E:.5,B6:.08
+  },
+
+  wheat:{
+    name:"🌾 Wheat/Roti",
+    unit:"g",
+    step:1,
+    base:100,
+    calories:250,
+    protein:9,
+    carbs:50,
+    fat:2.5,
+    fiber:8,
+    A:0,C:0,K:0,Folate:40,E:1.2,B6:.3
+  }
+};
+
+
+/* Daily state */
+const blankState = () => ({
+  foods:{},
+  water:0,
+  sleep:"",
+  weight:"",
+  checks:{
+    workout:false,
+    creatine:false,
+    plants:false,
+    calories:false,
+    protein:false,
+    fiber:false,
+    veg:false,
+    water:false,
+    sleep:false
+  }
+});
+
+let selectedDate = todayKey();
+let state = blankState();
+
+
+function todayKey(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function storageKey(date){
+  return "fitness07_" + date;
+}
+
+function loadDay(date){
+  selectedDate = date;
+  const raw = localStorage.getItem(storageKey(date));
+  state = raw ? {...blankState(),...JSON.parse(raw)} : blankState();
+
+  state.checks = {...blankState().checks,...(state.checks || {})};
+  state.foods = state.foods || {};
+
+  renderInputs();
+  renderAll();
+}
+
+function saveDay(){
+  localStorage.setItem(storageKey(selectedDate),JSON.stringify(state));
+}
+
+function toast(message){
+  const t=document.getElementById("toast");
+  t.textContent=message;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+
+/* Build food input list */
+function buildFoodList(){
+
+  const box=document.getElementById("foodList");
+  box.innerHTML="";
+
+  Object.entries(FOODS).forEach(([id,f])=>{
+
+    const row=document.createElement("div");
+    row.className="food-row";
+
+    row.innerHTML=`
+      <label>
+        ${f.name}
+        <small>${f.unit}</small>
+      </label>
+      <input class="input food-input"
+             id="food_${id}"
+             data-food="${id}"
+             type="number"
+             min="0"
+             step="${f.step}"
+             value="0">
+    `;
+
+    box.appendChild(row);
+  });
+}
+
+
+/* Read food inputs into state */
+function readFoodInputs(){
+
+  Object.keys(FOODS).forEach(id=>{
+    const input=document.getElementById("food_"+id);
+    state.foods[id]=parseFloat(input.value)||0;
+  });
+}
+
+
+/* Restore food inputs */
+function renderInputs(){
+
+  Object.keys(FOODS).forEach(id=>{
+    const input=document.getElementById("food_"+id);
+    if(input) input.value=state.foods[id] ?? 0;
+  });
+
+  document.getElementById("sleep").value=state.sleep ?? "";
+  document.getElementById("weight").value=state.weight ?? "";
+
+  Object.entries(state.checks).forEach(([id,value])=>{
+    const el=document.getElementById(id);
+    if(el) el.checked=!!value;
+  });
+}
+
+
+/* Calculate totals */
+function calculateTotals(){
+
+  const total={
+    calories:0,
+    protein:0,
+    carbs:0,
+    fat:0,
+    fiber:0,
+    A:0,C:0,K:0,Folate:0,E:0,B6:0
+  };
+
+  Object.entries(FOODS).forEach(([id,f])=>{
+
+    const amount=parseFloat(state.foods[id])||0;
+
+    if(!amount) return;
+
+    const multiplier =
+      f.base === 1
+      ? amount
+      : amount / f.base;
+
+    total.calories += (f.calories||0)*multiplier;
+    total.protein += (f.protein||0)*multiplier;
+    total.carbs += (f.carbs||0)*multiplier;
+    total.fat += (f.fat||0)*multiplier;
+    total.fiber += (f.fiber||0)*multiplier;
+
+    total.A += (f.A||0)*multiplier;
+    total.C += (f.C||0)*multiplier;
+    total.K += (f.K||0)*multiplier;
+    total.Folate += (f.Folate||0)*multiplier;
+    total.E += (f.E||0)*multiplier;
+    total.B6 += (f.B6||0)*multiplier;
+
+  });
+
+  return total;
+}
+
+
+/* Save + calculate */
+function calculate(showToast=true){
+
+  readFoodInputs();
+
+  state.sleep=document.getElementById("sleep").value;
+  state.weight=document.getElementById("weight").value;
+
+  Object.keys(state.checks).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) state.checks[id]=el.checked;
+  });
+
+  saveDay();
+  renderAll();
+
+  if(showToast) toast("Nutrition saved ✓");
+}
+
+
+/* Render dashboard */
+function renderAll(){
+
+  const t=calculateTotals();
+
+  document.getElementById("calories").textContent=Math.round(t.calories);
+  document.getElementById("protein").textContent=t.protein.toFixed(1);
+  document.getElementById("carbs").textContent=t.carbs.toFixed(1);
+  document.getElementById("fat").textContent=t.fat.toFixed(1);
+  document.getElementById("fiber").textContent=t.fiber.toFixed(1);
+
+  document.getElementById("heroCalories").textContent=Math.round(t.calories);
+  document.getElementById("heroProtein").textContent=t.protein.toFixed(1);
+
+  setBar("calorieBar",t.calories,TARGET.caloriesUpper);
+  setBar("proteinBar",t.protein,TARGET.protein);
+
+  document.getElementById("proteinRemaining").textContent =
+    Math.max(0,TARGET.protein-t.protein).toFixed(1)+"g";
+
+  document.getElementById("calorieRemaining").textContent =
+    Math.max(0,TARGET.calories-t.calories).toFixed(0)+" kcal";
+
+  renderVitamins(t);
+  renderDonut(t);
+  renderWater();
+  renderWeight();
+}
+
+
+/* Progress helper */
+function setBar(id,value,target){
+  const percent=Math.min(100,(value/target)*100);
+  document.getElementById(id).style.width=percent+"%";
+}
+
+
+/* Vitamins */
+function renderVitamins(t){
+
+  const map=[
+    ["A","vitA","barA",0],
+    ["C","vitC","barC",0],
+    ["K","vitK","barK",0],
+    ["Folate","vitFolate","barFolate",0],
+    ["E","vitE","barE",0],
+    ["B6","vitB6","barB6",0]
+  ];
+
+  map.forEach(([key,textId,barId])=>{
+
+    const value=t[key]||0;
+    const target=TARGET.vitamins[key];
+
+    document.getElementById(textId).textContent =
+      key==="B6"
+      ? value.toFixed(2)
+      : value.toFixed(0);
+
+    setBar(barId,value,target);
+  });
+}
+
+
+/* Donut based on macro calories */
+function renderDonut(t){
+
+  const proteinCal=t.protein*4;
+  const carbCal=t.carbs*4;
+  const fatCal=t.fat*9;
+  const total=proteinCal+carbCal+fatCal;
+
+  if(total<=0){
+    document.getElementById("donut").style.background="#292b30";
+  }else{
+
+    const p=(proteinCal/total)*100;
+    const c=(carbCal/total)*100;
+    const f=(fatCal/total)*100;
+
+    document.getElementById("donut").style.background=
+      `conic-gradient(
+        #ff1e2d 0 ${p}%,
+        #555 ${p}% ${p+c}%,
+        #8e0014 ${p+c}% ${p+c+f}%,
+        #999 ${p+c+f}% 100%
+      )`;
+  }
+
+  document.getElementById("donutCalories").textContent=Math.round(t.calories)+" kcal";
+  document.getElementById("legendProtein").textContent=t.protein.toFixed(1)+"g";
+  document.getElementById("legendCarbs").textContent=t.carbs.toFixed(1)+"g";
+  document.getElementById("legendFat").textContent=t.fat.toFixed(1)+"g";
+  document.getElementById("legendFiber").textContent=t.fiber.toFixed(1)+"g";
+}
+
+
+/* Water */
+function addWater(amount){
+  state.water=Math.min(TARGET.water,state.water+amount);
+  saveDay();
+  renderWater();
+  toast("Water added 💧");
+}
+
+function setWater(amount){
+  state.water=amount;
+  saveDay();
+  renderWater();
+}
+
+function renderWater(){
+
+  document.getElementById("waterAmount").textContent=state.water;
+  setBar("waterBar",state.water,TARGET.water);
+}
+
+
+/* Weight */
+function renderWeight(){
+
+  const w=parseFloat(state.weight)||80;
+
+  /*
+  80 kg = 0% progress
+  70 kg = 100% progress
+  */
+  const progress=Math.max(0,Math.min(100,((80-w)/10)*100));
+
+  document.getElementById("weightBar").style.width=progress+"%";
+  document.getElementById("weightProgressText").textContent=
+    Math.round(progress)+"% toward target";
+}
+
+
+/* Reset food */
+function resetFoods(){
+
+  state.foods={};
+  saveDay();
+  renderInputs();
+  renderAll();
+  toast("Food reset");
+}
+
+
+/* Complete day */
+function completeDay(){
+
+  readFoodInputs();
+
+  const t=calculateTotals();
+
+  const allHabits =
+    state.checks.workout &&
+    state.checks.creatine &&
+    state.checks.plants &&
+    state.checks.calories &&
+    state.checks.protein &&
+    state.checks.fiber &&
+    state.checks.veg &&
+    state.checks.water &&
+    state.checks.sleep;
+
+  const proteinDone=t.protein>=TARGET.proteinMinimum;
+  const fiberDone=t.fiber>=30;
+  const waterDone=state.water>=TARGET.water;
+  const sleepDone=parseFloat(state.sleep)>=7;
+
+  const message=document.getElementById("dayMessage");
+
+  if(allHabits && proteinDone && fiberDone && waterDone && sleepDone){
+
+    message.innerHTML=
+      `<strong class="red" style="font-size:19px">🔥 TODAY IS A WIN!</strong><br><br>
+       You completed the plan. Keep stacking days.`;
+
+    toast("Perfect day 🏆");
+
+  }else{
+
+    const missing=[];
+
+    if(t.calories>TARGET.caloriesUpper)
+      missing.push("calories too high");
+
+    if(!proteinDone)
+      missing.push("protein");
+
+    if(!fiberDone)
+      missing.push("fiber");
+
+    if(!waterDone)
+      missing.push("water");
+
+    if(!sleepDone)
+      missing.push("sleep");
+
+    if(!allHabits)
+      missing.push("checklist");
+
+    message.innerHTML=
+      `<strong style="color:#ff5555">Not complete yet.</strong><br><br>
+       Remaining: ${missing.join(" • ") || "review today's targets"}`;
+
+  }
+
+  saveDay();
+}
+
+
+/* Navigation */
+function scrollToId(id){
+  document.getElementById(id).scrollIntoView({behavior:"smooth"});
+}
+
+
+/* Auto-save input changes */
+document.addEventListener("input",e=>{
+
+  if(
+    e.target.matches(".food-input") ||
+    e.target.id==="sleep" ||
+    e.target.id==="weight"
+  ){
+    calculate(false);
+  }
+
+});
+
+document.addEventListener("change",e=>{
+
+  if(e.target.matches('input[type="checkbox"]')){
+    calculate(false);
+  }
+
+});
+
+
+/* Initial setup */
+window.addEventListener("load",()=>{
+
+  document.getElementById("datePicker").value=selectedDate;
+
+  buildFoodList();
+  loadDay(selectedDate);
+
+  document.getElementById("datePicker").addEventListener("change",e=>{
+    loadDay(e.target.value);
+    toast("Loaded "+e.target.value);
+  });
+
+});
+</script>
+
+</body>
+</html>
